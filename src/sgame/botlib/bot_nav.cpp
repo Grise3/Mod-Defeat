@@ -241,21 +241,33 @@ static void G_UpdatePathCorridor( Bot_t *bot, rVec spos, botRouteTargetInternal 
 	FindWaypoints( bot, bot->cornerVerts, bot->cornerFlags, bot->cornerPolys, &bot->numCorners, MAX_CORNERS );
 }
 
+// the point a bot wants to go to next
+// this is not always a path corner, but maybe the final goal position
 // return false if the bot has no next corner in mind, and true otherwise
-// currently, this uses closestPointOnPolyBoundary as an approximation
 bool G_BotPathNextCorner( int botClientNum, glm::vec3 &result )
 {
 	Bot_t *bot = &agents[ botClientNum ];
 	gentity_t *ent = &g_entities[ botClientNum ];
 	if ( bot->numCorners <= 0 )
 	{
+		const botTarget_t& target = ent->botMind->goal;
+		if ( target.targetsValidEntity() )
+		{
+			result = VEC2GLM( target.getTargetedEntity()->s.origin );
+			return true;
+		}
+		else if ( target.targetsCoordinates() )
+		{
+			result = VEC2GLM( &target.getPos()[0] );
+			return true;
+		}
 		return false;
 	}
-	dtPolyRef firstPoly = bot->corridor.getFirstPoly();
-	float corner[ 3 ] = { 0 };
-	bot->nav->query->closestPointOnPolyBoundary( firstPoly, ent->s.origin, corner );
-	std::swap( corner[ 1 ], corner[ 2 ] );  // recast and daemon have these swapped
-	result = VEC2GLM( corner );
+	// TODO: maybe check if the next corner is very close
+	// if it is, the corner after it might be the better choice
+	glm::vec3 nextCorner = VEC2GLM( &bot->cornerVerts[ 0 ] );
+	std::swap( nextCorner.y, nextCorner.z );
+	result = nextCorner;
 	return true;
 }
 
