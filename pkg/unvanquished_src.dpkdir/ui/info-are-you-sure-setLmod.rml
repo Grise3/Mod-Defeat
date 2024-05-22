@@ -1,0 +1,61 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window_unmovable.rml" />
+		<style>
+			body {
+				width: 35em;
+				height: 20em;
+				margin: auto;
+			}
+			body > * {
+				font-size: 1.1em;
+			}
+
+			button {
+				line-height: 1.45em;
+			}
+			button.yes {
+				width: 40%;
+				float: left;
+				margin-left: 0em;
+				background-color: #6d131d;
+			}
+
+			button.yes:hover {
+				background-color: #91676c;
+			}
+
+			button.no {
+				width: 40%;
+				float: right;
+				margin-right: 0em;
+				background-color: #131f6d;
+			}
+
+			button.no:hover {
+				background-color: #6771ad;
+			}
+
+			button.wide {
+				width: 100%;
+				margin-left: auto;
+				margin-right: auto;
+			}
+
+			p {
+				clear: both;
+			}
+		</style>
+	</head>
+
+	<body id="info-are-you-sure-setLmod" template="window_unmovable">
+
+
+		<p><translate quake emoticons>You are going to ^1SET^* this mod as default on Unvaquished.</translate></p>
+		<p><translate quake emoticons>^1Are you sure that you want to do that? </translate> </p>
+		<button class="yes" onclick='Events.pushevent("hide info-are-you-sure-setLmod; exec fs_extrapaks mod-defeat", event)'><translate>Yes</translate></button>
+		<button class="no" onclick='Events.pushevent("hide info-are-you-sure-setLmod", event)'><translate>No</translate></button>
+	</body>
+</rml>
+

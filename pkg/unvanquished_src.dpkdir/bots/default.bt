@@ -1,0 +1,60 @@
+selectClass
+{
+	selector
+	{
+		condition team == TEAM_ALIENS
+		{
+			selector
+			{
+				condition levelTime >= 60000
+					&& ( numUsersInTeam == 0
+						 || ( numOurBuildings( E_A_SPAWN ) < 2
+							  && numOurBuildings( E_A_SPAWN ) < cvar( "g_bot_buildNumEggs" ) ) )
+					&& cvar( "g_bot_buildAliens" )
+					&& usableBuildPoints >= chosenBuildableCost
+					&& !teamateHasWeapon( WP_ABUILD )
+					&& !teamateHasWeapon( WP_ABUILD2 )
+				{
+					selector
+					{
+						spawnAs PCL_ALIEN_BUILDER0_UPG
+						spawnAs PCL_ALIEN_BUILDER0
+					}
+				}
+				spawnAs PCL_ALIEN_LEVEL0
+			}
+		}
+		condition team == TEAM_HUMANS
+		{
+			selector
+			{
+				condition levelTime >= 60000
+					&& ( numUsersInTeam == 0
+						 || ( numOurBuildings( E_H_SPAWN ) < 2
+							  && numOurBuildings( E_H_SPAWN ) < cvar( "g_bot_buildNumTelenodes" ) ) )
+					&& cvar( "g_bot_buildHumans" )
+					&& usableBuildPoints >= chosenBuildableCost
+					&& !teamateHasWeapon( WP_HBUILD )
+				{
+					spawnAs WP_HBUILD
+				}
+				spawnAs WP_MACHINEGUN
+			}
+		}
+	}
+}
+
+selector
+{
+	behavior unstick
+
+	condition ( team == TEAM_ALIENS )
+	{
+		behavior default_aliens
+	}
+
+	condition ( team == TEAM_HUMANS )
+	{
+		behavior default_humans
+	}
+}

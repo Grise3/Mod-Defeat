@@ -1,0 +1,42 @@
+# Prevent startup with default configuration.
+# Set the following varible to 1 in order to allow server to start.
+startup=0
+
+# Otions that are passed to the engine.
+# They start with a minus character: -option
+
+# DNS name or IP addresses of your Internet interface.
+# The server auto-detects by default
+# IPv4
+#  -set net_ip 'localhost'
+# IPv6 (see net_enabled below)
+#  -set net_ip6 'localhost'
+
+# Server port.
+# The server uses 27960 by default or next available one.
+# IPv4
+#  -set net_port 27960
+# IPv6 (see net_enabled below)
+#  -set net_port6 27960
+
+# Enable IPv6
+#  -set net_enabled 3
+
+# Advertise your server on the public server list.
+#  -set dedicated 2
+
+# Serve packages from an extra directory (can be called multiple times)
+#  -pakpath /var/www/unvanquished/pkg
+
+# Load some extra packages (space separated base name list).
+#  -set fs_extrapaks 'dev/backport'
+
+DAEMON_OPTS=""
+
+# Options that are passed to the game.
+# They start with a plus character: +option
+
+# Game server startup script.
+# Default: +exec server.cfg
+
+GAME_OPTS="+exec server.cfg"

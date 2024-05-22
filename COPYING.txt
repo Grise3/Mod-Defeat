@@ -1,0 +1,34 @@
+------------------------------------------------------- Unvanquished License ---
+Unvanquished is licensed in two broadly separate sections: the code and the
+media.
+
+The code is licensed under the GNU GENERAL PUBLIC LICENSE. This license is
+contained in full in the file named GPL.txt. Please be aware of the exceptions
+to this license as listed below.
+
+The media is licensed under the CREATIVE COMMONS ATTRIBUTION-SHAREALIKE 2.5
+LICENSE. Please read http://creativecommons.org/licenses/by-sa/2.5/ to learn
+more about this license.
+
+---------------------------------------------------- Code License Exceptions ---
+The following files contain sections of code that are not licensed under the
+GPL, but are nevertheless GPL compatible. The license text for these licenses
+is contained within the files as listed.
+
+    src/cgame/cg_api.cpp                                         BSD license
+    src/sgame/sg_api.cpp                                         BSD license
+
+------------------------------------------------------ ET-XreaL Code License ---
+The ET-XreaL code is licensed under the GNU GENERAL PUBLIC LICENSE. This
+license is contained in full in the file named GPL.txt. Please be aware of
+the exceptions to this license as listed below.
+
+-------- Code License Exceptions - The parts that are not covered by the GPL ---
+See GPL.txt for the GNU GENERAL PUBLIC LICENSE
+
+ADDITIONAL TERMS: The Wolfenstein: Enemy Territory GPL Source Code is also
+subject to certain additional terms. You should have received a copy of
+these additional terms immediately following the terms and conditions of the
+GNU GPL which accompanied the Wolf ET Source Code. If not, please request a
+copy in writing from id Software at id Software LLC, c/o ZeniMax Media Inc.,
+Suite 120, Rockville, Maryland 20850 USA.

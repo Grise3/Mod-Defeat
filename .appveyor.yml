@@ -1,0 +1,64 @@
+# Documentation: https://wiki.unvanquished.net/wiki/Continuous_integration
+
+only_commits:
+  files:
+    - .appveyor.yml
+    - appveyor/
+    # The rest of this list should stay in sync with azure-pipelines.yml
+    - daemon/
+    - libs/
+    - src/
+    - .gitmodules
+    - CMakeLists.txt
+    - '*.cmake'
+    - macosx
+
+image: Visual Studio 2019
+
+environment:
+  global:
+    # SDK v7.0 MSVC Express 2008's SetEnv.cmd script will fail if the
+    # /E:ON and /V:ON options are not enabled in the batch script intepreter
+    # See: http://stackoverflow.com/a/13751649/163740
+    CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
+    PYTHON: "C:\\Python27.10-x64"
+    PYTHON_VERSION: "2.7.10"
+    PYTHON_ARCH: "64"
+    
+  matrix:
+    - COMPILER: msvc
+      COMPILER_VERSION: "16.0" # Visual Studio 2019
+      TARGET: x86
+      GENERATOR: "NMake Makefiles"
+
+matrix:
+  fast_finish: false
+
+configuration: Debug
+
+install:
+  - "powershell appveyor\\install.ps1"
+
+build:
+  parallel: true
+
+before_build:
+  - curl -sS https://gitlab.com/illwieckz/git-checkout-modules/raw/master/git-checkout-modules -o git-checkout-modules
+  # The git-checkout-modules command below is normally equivalent to 'git submodule update --init --recursive',
+  # but in the case that the branch name ends with '/sync' it tries to find branches with the same name.
+  - bash git-checkout-modules
+    --update
+    --sub-ref=%APPVEYOR_REPO_BRANCH%:has=/sync$
+    --sub-ref=%APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH%:has=/sync$
+    --print
+  - SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
+  - python --version
+  - pip install -r tools/cbse/requirements.txt --upgrade
+
+build_script:
+  - cmd: cmake --version
+  - cmd: call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars32.bat"
+  - cmd: cmake -DUSE_PRECOMPILED_HEADER=0 -DUSE_WERROR=1 -DBE_VERBOSE=1 -G "NMake Makefiles"
+         -DBUILD_CLIENT=0 -DBUILD_TTY_CLIENT=0 -DBUILD_SERVER=0 -DBUILD_GAME_NACL=0 -DCMAKE_BUILD_TYPE=Debug
+         -DDAEMON_CBSE_PYTHON_PATH=%PYTHON%\python.exe -H. -Bbuild
+  - cmd: cmake --build build

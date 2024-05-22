@@ -1,0 +1,7 @@
+*						text=auto
+
+*.sh					eol=lf
+*.pl					eol=lf
+external_deps/cygtar.py	eol=lf
+*.vcxproj				eol=crlf
+*.vcxproj.filter		eol=crlf

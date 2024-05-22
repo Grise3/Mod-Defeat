@@ -1,0 +1,47 @@
+<rml>
+	<head>
+		<link type="text/rcss" href="/ui/shared/basics.rcss" />
+		<link type="text/template" href="/ui/shared/window.rml" />
+		<link type="text/rcss" href="menu.rcss" />
+	</head>
+
+	<body id="menu_main" class="mainmenu" nohide onshow='welcome(event, document) Events.pushevent("play 2 sound/ui/heartbeat sound/ui/heartbeat1", event)'>
+		<img class="gradient" src="/ui/assets/background/bg" />
+		<img class="gradient black" src="/ui/assets/background/black" />
+		<img class="duel" src="/ui/assets/background/duel" />
+		<img class="black2" src="/ui/assets/background/black2" />
+		<img class="circles" src="/ui/assets/background/circles1" />
+		<img class="circles" src="/ui/assets/background/circles2" />
+		<img class="fog" src="/ui/assets/background/fog" />
+		<img class="logo" src="/ui/assets/logos/fuzzy_blue" />
+
+		<div class="devmsg"><translate>This is a beta version of Unvanquished. Please report any issue you may find at <web dest="bugs" /></translate></div>
+
+		<sidebar style="top: 30%;">
+
+			<!-- HACK: Using shared/window.rml as a stylesheet rather than a template -->
+			<window id="innersidebar" class="innersidebar">
+
+				<sidesection style="font-size: 1.1em;">
+					<indent>
+						<h1> <translate>Main menu</translate></h1>
+						<button-menu style="width:87%" onclick='Events.pushevent("show serverbrowser", event)'><translate>Server listings</translate></button-menu>
+
+						<button-menu style="width:87%" onclick='Events.pushevent("show createserver", event)'><translate>Start local/LAN game</translate></button-menu>
+
+						<button-menu style="width:87%" onclick='Events.pushevent("show options", event)'><translate>Options</translate></button-menu>
+						<!--<blocklink onclick='Events.pushevent("show options_fov", event)'><translate>Fields of view</translate></blocklink>-->
+
+						<button-menu style="width:87%" onclick='Events.pushevent("show help_gameplay", event)'><translate>Gameplay guide</translate></button-menu>
+
+						<button-menu style="width:87%" onclick='Events.pushevent("exec quit", event);Events.pushevent("exec updatelanguage", event)'><translate>Quit game</translate></button-menu>
+					</indent>
+
+					<blocklink class="leftalign fake" style="color: #ffffff;">
+					<translate>Beta</translate>&nbsp;<version/>
+					</blocklink>
+				</sidesection>
+			</window>
+		</sidebar>
+	</body>
+</rml>

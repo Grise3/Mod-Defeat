@@ -1,0 +1,134 @@
+#! /usr/bin/env bash
+
+# This script behaves differently given it is named
+# `unvanquished`, `unvanquished-server`, or `unvanquished-tty`.
+# It reads a file named `/etc/unvanquished/paths.conf` that
+# configures distribution-specific paths.
+# If this file is absent, it assumes paths are relative the
+# folder storing this script.
+
+# This script does not require `unvanquished-migrate-profile`
+# but can make use of it if it exists.
+
+set -e
+set -u
+
+print_help='false'
+enable_gdb='false'
+enable_system='false'
+program_name="$(basename "${BASH_SOURCE[0]}")"
+program_dir="$(dirname "${BASH_SOURCE[0]}")"
+
+conf_file='/etc/unvanquished/paths.conf'
+
+if [ -f "${conf_file}" ]
+then
+	. "${conf_file}"
+else
+	system_libpath="${program_dir}"
+	system_pakpath="${system_libpath}/pkg"
+	system_homepath="${system_libpath}/home"
+fi
+
+while ! [ -z "${1:-}" ]
+do
+	case "${1}" in
+		'--help'|'-h'|'-?'|'/?')
+			print_help='true'
+			break;
+			;;
+		'--gdb')
+			enable_gdb='true'
+			shift
+			;;
+		'--system')
+			enable_system='true'
+			shift
+			;;
+		'--client')
+			program_name='unvanquished'
+			shift
+			;;
+		'--server')
+			program_name='unvanquished-server'
+			shift
+			;;
+		'--tty')
+			program_name='unvanquished-tty'
+			shift
+			;;
+		*)
+			break
+			;;
+		esac
+done
+
+case "${program_name}" in
+	'unvanquished')
+		daemon_program='daemon'
+		program_desc='Unvanquished game'
+		;;
+	'unvanquished-server')
+		daemon_program='daemonded'
+		program_desc='Unvanquished game server'
+		;;
+	'unvanquished-tty')
+		daemon_program='daemon-tty'
+		program_desc='Unvanquished game console'
+		;;
+esac
+
+if "${print_help}"
+then
+	tab=$'\t'
+
+	cat <<-EOF
+	${program_name}: run ${program_desc}
+
+	Usage: ${program_name} [options] [engine and game options]
+
+	Options:
+	${tab}--help          print this help
+	${tab}--client        run Unvanquished game$([ "${program_name}" = 'unvanquished' ] && echo " (default)")
+	${tab}--server        run Unvanquished game server$([ "${program_name}" = 'unvanquished-server' ] && echo " (default)")
+	${tab}--tty           run Unvanquished game console$([ "${program_name}" = 'unvanquished-tty' ] && echo " (default)")
+	${tab}--system        use system Unvanquished home directory
+	${tab}--gdb           run with GDB debugger
+	EOF
+
+	if [ -f "${system_libpath}/daemon" ]
+	then
+		cat <<-EOF
+
+		Engine help:
+
+		EOF
+
+		"${system_libpath}/daemon" --help
+	fi
+
+	exit
+fi
+
+if "${enable_system}"
+then
+	user_homepath="${system_homepath}"
+else
+	user_homepath="${XDG_DATA_HOME:-${HOME}/.local/share}/unvanquished"
+
+	migration_script="${system_libpath}/unvanquished-migrate-profile"
+
+	if [ -f "${migration_script}" ]
+	then
+		"${migration_script}"
+	fi
+fi
+
+if "${enable_gdb}"
+then
+	exec_cmd='exec gdb --args'
+else
+	exec_cmd='exec'
+fi
+
+${exec_cmd} "${system_libpath}/${daemon_program}" -homepath "${user_homepath}" -libpath "${system_libpath}" -pakpath "${system_pakpath}" "${@}"
