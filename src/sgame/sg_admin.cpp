@@ -489,6 +489,12 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 		"warn",         G_admin_warn,        false, "warn",
 		N_("warn a player about his behaviour"),
 		N_("[^3name|slot#^7] [^3reason^7]")
+	},
+
+	{
+		"overlay",         G_admin_overlay,        false, "overlay",
+		N_("warn a player about his behaviour"),
+		N_("[^3name|slot#^7] [^3message^7]")
 	}
 };
 #define adminNumCmds ARRAY_LEN( g_admin_cmds )
@@ -560,7 +566,7 @@ static int G_admin_stealthed( gentity_t *admin )
 {
 	/*
 		2 = super stealth (admin is anonymous)
-		1 = standard stealth (use registered (admin) name, not netname. 
+		1 = standard stealth (use registered (admin) name, not netname.
 		                      this was the previous default behaviour)
 		0 = not stealthed
 	*/
@@ -569,7 +575,7 @@ static int G_admin_stealthed( gentity_t *admin )
 		return ( g_adminStealthConsole.Get() ? 2 : 0 );
 	}
 
-	if ( G_admin_permission( admin, ADMF_SUPERSTEALTH ) 
+	if ( G_admin_permission( admin, ADMF_SUPERSTEALTH )
 	     || g_adminStealthMode.Get() == 2 )
 	{
 		return 2;
@@ -585,7 +591,7 @@ static int G_admin_stealthed( gentity_t *admin )
 }
 
 template <typename... Args>
-void G_admin_action( const char *action, const char *translation, 
+void G_admin_action( const char *action, const char *translation,
                      gentity_t *admin, Args... args )
 {
 	char cloakTags[][8] = { "", "^9●^*", "^0●^*" };
@@ -597,7 +603,7 @@ void G_admin_action( const char *action, const char *translation,
 	// quote only has a limited buffer, so cache these values here.
 	Q_strncpyz( qAdminNetName, Quote( G_user_name( admin, "console" ) ), sizeof( qAdminNetName ) );
 	Q_strncpyz( qAdminTaggedName, Quote( va( "%s%s", cloakTags[ G_admin_stealthed( admin ) ], G_user_name( admin, "console" ) ) ), sizeof( qAdminTaggedName ) );
-	Q_strncpyz( qAdminAdminName, Quote( ( admin ) 
+	Q_strncpyz( qAdminAdminName, Quote( ( admin )
 	                                    ? ( admin->client->pers.admin ? admin->client->pers.admin->name : qAdminNetName )
 	                                    : "console" ), sizeof( qAdminAdminName ) );
 	Q_strncpyz( qAdminStealthName, Quote( g_adminStealthName.Get().c_str() ), sizeof( qAdminStealthName ) );
@@ -618,9 +624,9 @@ void G_admin_action( const char *action, const char *translation,
 	*/
 
 	// tell the console what happened first
-	trap_SendServerCommand( -2, va( "print_tr %s %s", action, 
-	                        va( translation, 
-	                            qAdminTaggedName, 
+	trap_SendServerCommand( -2, va( "print_tr %s %s", action,
+	                        va( translation,
+	                            qAdminTaggedName,
 	                            args... ) ) );
 
 	for ( int i = 0; i < level.maxclients; i++ )
@@ -646,9 +652,9 @@ void G_admin_action( const char *action, const char *translation,
 			name = qAdminTaggedName;
 		}
 
-		trap_SendServerCommand( i, va( "print_tr %s %s", action, 
-		                        va( translation, 
-		                            name.c_str(), 
+		trap_SendServerCommand( i, va( "print_tr %s %s", action,
+		                        va( translation,
+		                            name.c_str(),
 		                            args... ) ) );
 	}
 }
@@ -1782,8 +1788,8 @@ static void G_admin_ban_message(
 
 		Com_sprintf( areason, alen,
 		             "^3Banned player ^*%s^3 tried to connect from %s (ban #%d)",
-		             ( !Q_stricmp( name, ban->name ) 
-		               ? ban->name 
+		             ( !Q_stricmp( name, ban->name )
+		               ? ban->name
 		               : va( "%s ^3(a.k.a. ^*%s^3)", name, ban->name ) ),
 		             ent->client->pers.ip.str,
 		             ban->id );
@@ -2791,7 +2797,7 @@ bool G_admin_slap( gentity_t *ent )
 
 	if ( health->Alive() )
 	{
-		G_admin_action( QQ( N_( "^3slap:^* $1$^* slapped $2$ ^*$3$" ) ), "%s %s %s", ent, Quote( vic->client->pers.netname ), 
+		G_admin_action( QQ( N_( "^3slap:^* $1$^* slapped $2$ ^*$3$" ) ), "%s %s %s", ent, Quote( vic->client->pers.netname ),
 		                ( damage > 0 ? Quote( va( "with %.0f damage", damage ) ) : QQ( "" ) ) );
 
 	} // only print the chat msg if they don't die. otherwise the MOD_SLAP event will suffice.
@@ -3306,7 +3312,7 @@ bool G_admin_unban( gentity_t *ent )
 	               ban->ip.str ) );
 
 	if ( expireOnly )
-	{		
+	{
 		G_admin_action( QQ( N_("^3unban:^* ban #$2$ for $3$^* has been expired by $1$") ),
 		                "%s %d %s", ent, bnum, Quote( ban->name ) );
 
@@ -3496,7 +3502,7 @@ bool G_admin_adjustban( gentity_t *ent )
 	                Quote( ban->name ),
 	                ( mask ) ? Quote( va( "netmask: /%d%s", mask, ( length >= 0 || *reason ) ? ", " : "" ) ) : QQ( "" ),
 	                ( length >= 0 ) ? QQ( N_( "duration: " ) ) : QQ( "" ),
-	                ( atoi( seconds ) > 0 ) ? Quote( seconds ) : QQ( "" ), 
+	                ( atoi( seconds ) > 0 ) ? Quote( seconds ) : QQ( "" ),
 	                ( atoi( seconds ) > 0 ) ? duration : QQ( "" ),
 	                ( length >= 0 && *reason ) ? ", " : QQ( "" ),
 	                ( *reason ) ? QQ( N_( "reason: ") ) : QQ( "" ),
@@ -3656,7 +3662,7 @@ bool G_admin_speclock( gentity_t *ent )
 	else
 	{
 		G_admin_action( QQ( N_("^3speclock:^* $1$^* blocked team-change for $2$^* for $3$$4t$") ),
-		                "%s %s %s %s", ent, Quote( vic->client->pers.netname ), Quote( time ), 
+		                "%s %s %s %s", ent, Quote( vic->client->pers.netname ), Quote( time ),
 		                ( lockTime ? duration : QQ( "" ) ) );
 	}
 
@@ -3812,6 +3818,54 @@ bool G_admin_warn( gentity_t *ent )
 
 	return true;
 }
+
+
+
+bool G_admin_overlay( gentity_t *ent )
+{
+	char      reason[ 64 ];
+	int       pids[ MAX_CLIENTS ], found, count;
+	char      name[ MAX_NAME_LENGTH ], err[ MAX_STRING_CHARS ];
+	gentity_t *vic;
+
+	if( trap_Argc() < 3 )
+	{
+		 ADMP( QQ( N_("^overlay:^* usage: overlay [name|slot#] [message]") ) );
+		return false;
+	}
+
+	trap_Argv( 1, name, sizeof( name ) );
+
+	if( ( found = G_ClientNumbersFromString( name, pids, MAX_CLIENTS ) ) != 1 )
+	{
+		count = G_MatchOnePlayer( pids, found, err, sizeof( err ) );
+		ADMP( va( "%s %s %s",
+				  QQ( "^3$1$:^* $2t$" ),
+				  "overlay",
+				  ( count > 0 ) ? Quote( Substring( err, 0, count ) ) : Quote( err ) ) );
+		return false;
+	}
+
+	if( !admin_higher( ent, &g_entities[ pids[ 0 ] ] ) )
+	{
+		ADMP( va( "%s %s", QQ( N_("^3$1$:^* sorry, but your intended victim has a higher admin"
+		          " level than you") ), "overlay" ) );
+		return false;
+	}
+
+	vic = &g_entities[ pids[ 0 ] ];
+
+	Color::StripColors( ConcatArgs( 2 ), reason, sizeof( reason ) );
+
+	 CPx( pids[ 0 ], va( "cp_tr " QQ(N_("^1You have received a message from an administrator:\n^3$1$")) " %s",
+                        Quote( message ) ) );
+
+	G_admin_action( QQ( N_("^3overlay:^* $1$ Send an admin message to $2$^*") ),
+	                "%s %s %s", ent, Quote( vic->client->pers.netname ) );
+
+	return true;
+}
+
 
 bool G_admin_mute( gentity_t *ent )
 {
@@ -4365,7 +4419,7 @@ static int ban_out( void *ban, char *str )
 		d_color = Color::Green;
 	}
 
-	Com_sprintf( str, MAX_STRING_CHARS, 
+	Com_sprintf( str, MAX_STRING_CHARS,
 	             "^3------------------------------\n"
 	             "    Name:     %s\n"
 	             "    IP:       %s%s\n"
@@ -4373,12 +4427,12 @@ static int ban_out( void *ban, char *str )
 	             "    Reason:   ^3%s\n"
 	             "    Date:     ^3%s\n"
 	             "    Details:  %s%s%s%s%s%s",
-	             b->name, 
+	             b->name,
 	             Color::ToString( ( strchr( b->ip.str, '/' ) ) ? Color::Red : Color::Yellow ).c_str(),
 	             b->ip.str,
 	             b->banner,
 	             b->reason,
-	             date, 
+	             date,
 	             Color::ToString( G_ADMIN_BAN_IS_WARNING( b ) ? Color::Yellow : Color::Red ).c_str(),
 	             G_ADMIN_BAN_IS_WARNING( b ) ? "WARNING " : "BAN ",
 	             ( ( active && b->expires ) ? "^7- expiring in " : "^7- " ),
@@ -4501,7 +4555,7 @@ bool G_admin_adminhelp( gentity_t *ent )
 		ADMP( va( "%s %d", QQ( N_("^3adminhelp:^* $1$ available commands\n"
 		"run adminhelp [^3command^7] for adminhelp with a specific command.") ),count ) );
 
-		if ( G_admin_permission( ent, ADMF_STEALTH ) 
+		if ( G_admin_permission( ent, ADMF_STEALTH )
 		     || G_admin_permission( ent, ADMF_SUPERSTEALTH ) )
 		{
 			ADMP( QQ( N_( "\n^3adminhelp:^* You are cloaked by Admin Stealth\n"
@@ -5745,7 +5799,7 @@ bool G_admin_buildlog( gentity_t *ent )
 
 	if ( ent && ent->client->pers.team != TEAM_NONE )
 	{
-		G_admin_action( QQ( N_("^3buildlog:^* $1$^* requested a log of recent$2$ building activity") ), 
+		G_admin_action( QQ( N_("^3buildlog:^* $1$^* requested a log of recent$2$ building activity") ),
 		                "%s %s", ent,
 		                ( team != TEAM_NONE ? Quote( va( " %s", BG_TeamName( team ) ) ) : QQ( "" ) ) );
 	}
@@ -6257,11 +6311,11 @@ static bool BotAddCmd( gentity_t* ent, const Cmd::Args& args )
 		if ( ent )
 		{
 			G_admin_action( QQ( N_("^3bot:^* $1$^* added a bot to the $2$ team with behavior ^3$3$$4$") ),
-			                "%s %s %s %s", 
-			                ent, 
-			                Quote( va( "%s%s^*", 
-			                           ( team == TEAM_ALIENS ? "^i" : "^d" ), 
-			                           BG_TeamName( team ) ) ), 
+			                "%s %s %s %s",
+			                ent,
+			                Quote( va( "%s%s^*",
+			                           ( team == TEAM_ALIENS ? "^i" : "^d" ),
+			                           BG_TeamName( team ) ) ),
 			                Quote( behavior ),
 			                ( skill ) ? Quote( va( "^* and skill ^3%d^*", skill ) ) : QQ( "" ) );
 		}
@@ -6453,7 +6507,7 @@ bool G_admin_bot( gentity_t *ent )
 
 			if ( ent )
 			{
-				G_admin_action( QQ( N_("^3bot:^* $1$^* removed bot $2$^* from the game") ), "%s %s", 
+				G_admin_action( QQ( N_("^3bot:^* $1$^* removed bot $2$^* from the game") ), "%s %s",
 				                ent, G_quoted_user_name( &g_entities[ clientNum ], "a bot" ) );
 			}
 			G_BotDel( clientNum ); //delete the bot
@@ -6587,7 +6641,7 @@ bool G_admin_bot( gentity_t *ent )
 			}
 
 			G_admin_action( QQ( N_("^3bot:^* $1$^* set bot skill for $2$ to ^3$3$") ),
-			                    "%s %s %d", ent, 
+			                    "%s %s %d", ent,
 			                    Quote( nameStr ),
 			                    skill );
 		}
